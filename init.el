@@ -1,31 +1,27 @@
 ;; Add home emacs dir to load path
 (add-to-list 'load-path "~/.emacs.d")
 
-;; Byte recompile the .emacs.d dir
-(defun byte-recompile-emacsd ()
-  (byte-recompile-directory "~/.emacs.d" 1))
-
 ;; User info and prefs
 (setq user-full-name "Edoardo \"Dado\" Marcora")
 (setq user-mail-address "edoardo.marcora@gmail.com")
 (prefer-coding-system 'utf-8)
 
 ;; Colors and appearance
-(global-font-lock-mode t)
-(setq font-lock-maximum-decoration t)
 (scroll-bar-mode 'right)
 (tool-bar-mode nil)
 (show-paren-mode t)
+(setq show-paren-style 'mixed)
 (column-number-mode t)
-;;(global-hl-line-mode t)
-;;(set-face-background 'hl-line "#222")
-;;(set-background-color "black")
-;;(set-foreground-color "white")
-;;(set-cursor-color "white")
-;;(set-default-font "fixed")
-(require 'color-theme)        ; sudo aptitude install emacs-goodies-el
-(color-theme-initialize)
-(color-theme-arjen)
+(global-font-lock-mode t t)
+(setq font-lock-maximum-decoration t)
+(setq query-replace-highlight t)
+(setq search-highlight t)
+(set-background-color "black")
+(set-foreground-color "white")
+;;(add-to-list 'load-path "~/.emacs.d/color-theme")
+;;(require 'color-theme)        ; sudo aptitude install emacs-goodies-el
+;;(color-theme-initialize)
+;;(color-theme-arjen)
 
 ;; Carbon emacs config
 (setq mac-command-modifier 'alt mac-option-modifier 'meta)
@@ -63,7 +59,8 @@
 (setq default-major-mode 'text-mode)
 (setq initial-major-mode 'text-mode)
 ;;(setq text-mode-hook 'turn-on-auto-fill)
-(setq inhibit-startup-message t)
+(setq inhibit-startup-screen t)
+(setq initial-scratch-message nil)
 (setq require-final-newline t)
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq next-line-add-newlines nil)
@@ -86,7 +83,11 @@
 (setq uniquify-separator "/")
 (setq uniquify-after-kill-buffer-p t)
 (setq uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
+;;(require 'find-recursive)
+(require 'anything)
 (require 'anything-config)
+(require 'anything-rcodetools)
+(require 'anything-show-completion)
 (global-set-key (kbd "RET") 'newline-and-indent)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x a") 'anything)
@@ -97,7 +98,7 @@
 ;; Tramp
 (setq tramp-default-method "ssh")
 (setq tramp-default-user "marcorae"
-      tramp-default-host "paramount.dreamhost.com")
+      tramp-default-host "spurs.dreamhost.com")
 
 ;; Dired
 (require 'dired-extension)
@@ -186,7 +187,7 @@
 (setq org-completion-use-ido t)
 (setq org-return-follows-link t)
 (setq org-support-shift-select t)
-; (setq org-replace-disputed-keys t)
+                                        ; (setq org-replace-disputed-keys t)
 (define-key global-map "\C-cr" 'org-remember)
 (add-hook 'org-mode-hook                ; yasnippet compatibility
           (lambda ()
@@ -195,10 +196,6 @@
 
 ;; Dot mode
 (load-file "~/.emacs.d/graphviz-dot-mode.el")
-
-;; autotest (ZenTest)
-;;(require 'toggle )
-;;(require 'autotest)
 
 ;; AUCTeX
 ;; (require 'tex-site)
@@ -215,6 +212,7 @@
 (setq TeX-auto-untabify t)
 (setq bib-novice nil)
 ;; (setq outline-minor-mode-prefix "\C-c\C-o")
+(setq LaTeX-command "latex -synctex=1")
 
 ;; RefTex
 (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
@@ -237,16 +235,109 @@
             (pymacs-load "bibtex")
             (local-set-key [(control c) (+)] 'bibtex-pmfetch)))
 
+;; Python and Pymacs
+;; sudo aptitude install python-mode pymacs
+(autoload 'pymacs-load "pymacs" nil t)
+(autoload 'pymacs-eval "pymacs" nil t)
+(autoload 'pymacs-exec "pymacs" nil t)
+(autoload 'pymacs-apply "pymacs")
+(autoload 'pymacs-call "pymacs")
+(eval-after-load "pymacs"
+  '(add-to-list 'pymacs-load-path "~/.emacs.d/"))
+(add-hook 'python-mode-hook
+          (lambda ()
+            (setq py-python-command "python")
+            (require 'pycomplete)
+            (require 'ipython)))
+
+;; MATLAB mode
+(autoload 'matlab-mode "matlab" "Enter MATLAB mode." t)
+(setq auto-mode-alist (cons '("\\.m\\'" . matlab-mode) auto-mode-alist))
+(autoload 'matlab-shell "matlab" "Interactive MATLAB mode." t)
+(setq matlab-indent-function t) ; if you want function bodies indented
+(setq matlab-verify-on-save-flag nil)   ; turn off auto-verify on save
+(setq matlab-shell-command-switches '("-nojvm"))
+
+;; Ruby mode
+(defun ruby-eval-buffer () (interactive)
+  "Evaluate the buffer with ruby."
+  (shell-command-on-region (point-min) (point-max) "ruby"))
+
+(require 'ruby-mode)
+(setq rdebug-short-key-mode t)
+(setq ri-ruby-script "/.emacs.d/ri-emacs.rb")
+(autoload 'ri "~/.emacs.d/ri-ruby.el" nil t)
+(add-to-list 'auto-mode-alist '("\\.thor$" . ruby-mode))
+(add-to-list 'auto-mode-alist '("\\.ru$" . ruby-mode))
+(add-to-list 'auto-mode-alist '("\\.rjs$" . ruby-mode))
+(add-hook 'ruby-mode-hook
+          (lambda ()
+            (require 'ruby-electric)
+            (require 'ruby-block)
+            (require 'inf-ruby)
+            (require 'rdebug)
+            (local-set-key "\r" 'newline-and-indent)
+            (local-set-key [(control return)] 'open-next-line)
+            (local-set-key "\C-c\C-a" 'ruby-eval-buffer)
+            (imenu-add-to-menubar "IMENU")
+            (ruby-electric-mode t)
+            (ruby-block-mode t)))
+(add-to-list 'smart-compile-alist '("\\.rb$" . "ruby -w %f")) ;; redef smart-compile command for ruby
+
+;; Rinari
+(add-to-list 'load-path "~/.emacs.d/rinari")
+(require 'rinari)
+(setq rinari-tags-file-name "TAGS")
+
+;; YAML mode
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+(add-hook 'yaml-mode-hook
+          (lambda ()
+            (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+
+;; HAML/SASS mode
+(require 'haml-mode nil 't)
+(require 'sass-mode nil 't)
+(add-to-list 'auto-mode-alist '("\\.haml$" . haml-mode))
+(add-to-list 'auto-mode-alist '("\\.sass$" . sass-mode))
+
+;; autotest
+(require 'toggle)
+(require 'autotest)
+
+;; nxhtml
+(add-to-list 'load-path "~/.emacs.d/nxhtml")
+(load-library "autostart")
+(setq
+ nxhtml-global-minor-mode t
+ mumamo-chunk-coloring 1
+ nxhtml-skip-welcome t
+ indent-region-mode t
+ rng-nxml-auto-validate-flag nil
+ nxml-degraded t)
+(add-to-list 'auto-mode-alist '("\\.html$" . nxhtml-mumamo-mode))
+(add-to-list 'auto-mode-alist '("\\.html\\.erb$" . eruby-nxhtml-mumamo-mode))
+;;(add-hook 'nxhtml-mumamo-mode-hook 'tabkey2-mode)
+;;(add-hook 'eruby-nxhtml-mumamo-mode-hook 'tabkey2-mode)
+
 ;; CSS
 (setq cssm-indent-function 'cssm-c-style-indenter)
 
 ;; JavaScript
+
+;; espresso
+;; (autoload 'espresso-mode "espresso" nil t)
+;; (add-to-list 'auto-mode-alist '("\\.js$" . espresso-mode))
+;; (add-to-list 'auto-mode-alist '("\\.json$" . espresso-mode))
+
+;; js2
 (autoload 'js2-mode "js2" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 ;; http://www.corybennett.org/projects/
 (add-hook 'js2-mode-hook
           (lambda ()
-;;; make emacs recognize the error format produced by jslint
+            ;; make emacs recognize the error format produced by jslint
             (set (make-local-variable 'compilation-error-regexp-alist)
                  '(("^\\([a-zA-Z.0-9_/-]+\\):\\([0-9]+\\):\\([0-9]+\\)" 1 2 3)))
             (set (make-local-variable 'compile-command)
@@ -275,100 +366,62 @@
                                                 (if (looking-back "^\s*")
                                                     (back-to-indentation))))))))
 
-;; YAML mode
-(add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
-(add-hook 'yaml-mode-hook
-          (lambda ()
-            (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
-
-;; HAML/SASS
-(require 'haml-mode nil 't)
-(require 'sass-mode nil 't)
-(add-to-list 'auto-mode-alist '("\\.haml$" . haml-mode))
-(add-to-list 'auto-mode-alist '("\\.sass$" . sass-mode))
-
-;; Python and Pymacs
-;; sudo aptitude install python-mode pymacs
-(autoload 'pymacs-load "pymacs" nil t)
-(autoload 'pymacs-eval "pymacs" nil t)
-(autoload 'pymacs-exec "pymacs" nil t)
-(autoload 'pymacs-apply "pymacs")
-(autoload 'pymacs-call "pymacs")
-(eval-after-load "pymacs"
-  '(add-to-list 'pymacs-load-path "~/.emacs.d/"))
-(add-hook 'python-mode-hook
-          (lambda ()
-            (setq py-python-command "python")
-            (require 'pycomplete)
-            (require 'ipython)))
-
-;; MATLAB mode
-(autoload 'matlab-mode "matlab" "Enter MATLAB mode." t)
-(setq auto-mode-alist (cons '("\\.m\\'" . matlab-mode) auto-mode-alist))
-(autoload 'matlab-shell "matlab" "Interactive MATLAB mode." t)
-(setq matlab-indent-function t) ; if you want function bodies indented
-(setq matlab-verify-on-save-flag nil)   ; turn off auto-verify on save
-(setq matlab-shell-command-switches '("-nojvm"))
-
-;; Ruby
-(add-to-list 'auto-mode-alist '("\\.thor$" . ruby-mode))
-(add-to-list 'auto-mode-alist '("\\.ru$" . ruby-mode))
-(add-hook 'ruby-mode-hook
-          (lambda ()
-            (local-set-key "\r" 'newline-and-indent)
-            (local-set-key [(control return)] 'open-next-line)
-            (require 'inf-ruby)
-            (require 'ruby-electric)
-            (ruby-electric-mode t)))
-(add-to-list 'smart-compile-alist '("\\.rb$" . "ruby -w %f")) ;; redef smart-compile command for ruby
-
-;; Rinari
-(add-to-list 'load-path "~/.emacs.d/rinari")
-(require 'rinari)
-(setq rinari-tags-file-name "TAGS")
-
-;; Ruby on Rails
-
-;; nxhtml
-(load-library "autostart")
-(setq
- nxhtml-global-minor-mode t
- mumamo-chunk-coloring 'submode-colored
- nxhtml-skip-welcome t
- indent-region-mode t
- rng-nxml-auto-validate-flag nil
- nxml-degraded t)
-
-;; predictive
-(add-to-list 'load-path "~/.emacs.d/predictive/")
-(add-to-list 'load-path "~/.emacs.d/predictive/latex/")
-(add-to-list 'load-path "~/.emacs.d/predictive/texinfo/")
-(add-to-list 'load-path "~/.emacs.d/predictive/html/")
-(require 'predictive)
-(add-to-list 'load-path "~/.emacs.d/completion-ui/")
-(require 'completion-ui)
+;; tabkey2
+(require 'tabkey2)
+(tabkey2-mode t)
 
 ;; yasnippet
 (add-to-list 'load-path "~/.emacs.d/yasnippet")
 (require 'yasnippet)
 (yas/initialize)
 (yas/load-directory "~/.emacs.d/yasnippet/snippets")
-;;(if (boundp 'mumamo:version)
-;;    ((setq mumamo-map
-;;           (let ((map (make-sparse-keymap)))
-;;             (define-key map [(control meta prior)] 'mumamo-backward-chunk)
-;;             (define-key map [(control meta next)] 'mumamo-forward-chunk)
-;;             (define-key map [tab] 'yas/expand)
-;;             map))
-;;     (mumamo-add-multi-keymap 'mumamo-multi-major-mode mumamo-map)))
+;;(load "~/.emacs.d/yasnippets-rails/setup.el")
 
-;; tabkey2
-(require 'tabkey2)
-(tabkey2-mode t)
+;; predictive
+;;(add-to-list 'load-path "~/.emacs.d/predictive/")
+;;(add-to-list 'load-path "~/.emacs.d/predictive/latex/")
+;;(add-to-list 'load-path "~/.emacs.d/predictive/texinfo/")
+;;(add-to-list 'load-path "~/.emacs.d/predictive/html/")
+;;(require 'predictive)
+;;(add-to-list 'load-path "~/.emacs.d/completion-ui/")
+;;(require 'completion-ui)
+
+;; autocomplete
+(add-to-list 'load-path "~/.emacs.d/auto-complete")
+(require 'auto-complete)
+(require 'auto-complete-yasnippet)
+(require 'auto-complete-ruby)
+(require 'auto-complete-css)
+(require 'auto-complete-config)
+(global-auto-complete-mode t)
+(setq ac-auto-start t)
+(setq ac-dwim 3)
+(setq ac-override-local-map nil)
+(define-key ac-complete-mode-map "\t" 'ac-expand)
+(define-key ac-complete-mode-map "\r" 'ac-complete)
+;; or
+;; (define-key ac-complete-mode-map "\t" 'ac-complete)
+;; (define-key ac-complete-mode-map "\r" nil)
+
+(set-default 'ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer))
+(setq ac-modes
+      (append ac-modes
+              '(eshell-mode
+                org-mode)))
+(add-to-list 'ac-trigger-commands 'org-self-insert-command)
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-symbols))))
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
+(add-hook 'ruby-mode-hook
+          (lambda ()
+            (setq ac-omni-completion-sources '(("\\.\\=" ac-source-rcodetools)))))
 
 ;; Textmate-like behavior for Carbon emacs
 (require 'textmate)
-(textmate-mode)
+(textmate-mode t)
 
 ;; For more TextMate-like behavior
 ;; (setq skeleton-pair t)
@@ -484,8 +537,7 @@
 ;; Centering code stolen from somewhere and restolen from
 ;; http://www.chrislott.org/geek/emacs/dotemacs.html
 ;; centers the screen around a line...
-(global-set-key [(control l)]  'centerer)
-
+(global-set-key [(control l)] 'centerer)
 (defun centerer ()
   "Repositions current line: once middle, twice top, thrice bottom"
   (interactive)
@@ -498,8 +550,34 @@
          (recenter)
          (setq this-command 'centerer1))))
 
-;; Kills all them buffers except scratch
-;; <http://www.chrislott.org/geek/emacs/dotemacs.html>
+
+;; Kills live buffers
+;; obtained from http://www.chrislott.org/geek/emacs/dotemacs.html
+(defun nuke-some-buffers (&optional list)
+  "For each buffer in LIST, kill it silently if unmodified. Otherwise ask.
+LIST defaults to all existing live buffers."
+  (interactive)
+  (if (null list)
+      (setq list (buffer-list)))
+  (while list
+    (let* ((buffer (car list))
+           (name (buffer-name buffer)))
+      (and (not (string-equal name ""))
+                                        ;(not (string-equal name "*Messages*"))
+           ;; (not (string-equal name "*Buffer List*"))
+                                        ;(not (string-equal name "*buffer-selection*"))
+                                        ;(not (string-equal name "*Shell Command Output*"))
+           (not (string-equal name "*scratch*"))
+           (/= (aref name 0) ? )
+           (if (buffer-modified-p buffer)
+               (if (yes-or-no-p
+                    (format "Buffer %s has been edited. Kill? " name))
+                   (kill-buffer buffer))
+             (kill-buffer buffer))))
+    (setq list (cdr list))))
+
+;; Kills all buffers except scratch
+;; obtained from http://www.chrislott.org/geek/emacs/dotemacs.html
 (defun nuke-all-buffers ()
   "kill all buffers, leaving *scratch* only"
   (interactive)
@@ -556,15 +634,31 @@ buffer instead of replacing the text in region."
       (if (eq arg nil)
           (shell-command-on-region p m command t t)
         (shell-command-on-region p m command)))))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(LaTeX-command "latex -synctex=1"))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+;; show ascii table
+;; optained from http://www.chrislott.org/geek/emacs/dotemacs.html
+(defun ascii-table ()
+  "Print the ascii table. Based on a defun by Alex Schroeder <asc@bsiag.com>"
+  (interactive)
+  (switch-to-buffer "*ASCII*")
+  (erase-buffer)
+  (insert (format "ASCII characters up to number %d.\n" 254))
+  (let ((i 0))
+    (while (< i 254)
+      (setq i (+ i 1))
+      (insert (format "%4d %c\n" i i))))
+  (beginning-of-buffer))
+
+;; insert date into buffer at point
+;; optained from http://www.chrislott.org/geek/emacs/dotemacs.html
+(defun insert-date ()
+  "Insert date at point."
+  (interactive)
+  (insert (format-time-string "%a %Y-%m-%d - %l:%M %p")))
+
+;; Byte recompile the .emacs.d dir
+(defun byte-recompile-emacsd ()
+  "Byte recompile emacsd"
+  (interactive)
+  (byte-recompile-directory "~/.emacs.d" 1))
+
