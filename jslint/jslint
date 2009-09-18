@@ -1,0 +1,145 @@
+#!/usr/bin/perl
+# 2008-04-09
+# Copyright (c) 2008 Cory Bennett  (www.corybennett.org)
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+# of the Software, and to permit persons to whom the Software is furnished to do
+# so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# The Software shall be used for Good, not Evil.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
+use Getopt::Long;
+
+my %opt = (
+    adsafe   => 0,    # if use of some browser features should be restricted
+    bitwise  => 0,    # if bitwise operators should not be allowed
+    browser  => 0,    # if the standard browser globals should be predefined
+    cap      => 0,    # if upper case HTML should be allowed
+    debug    => 0,    # if debugger statements should be allowed
+    eqeqeq   => 0,    # if === should be required
+    evil     => 0,    # if eval should be allowed
+    forin    => 0,    # if for in statements must filter
+    fragment => 0,    # if HTML fragments should be allowed
+    laxbreak => 0,    # if line breaks should not be checked
+    nomen    => 0,    # if names should be checked
+    on       => 0,    # if HTML event handlers should be allowed
+    passfail => 0,    # if the scan should stop on first error
+    plusplus => 0,    # if increment/decrement should not be allowed
+    regexp   => 0,    # if the . should not be allowed in regexp literals
+    rhino    => 0,    # if the Rhino environment globals should be predefined
+    undef    => 0,    # if variables should be declared before used
+    sidebar  => 0,    # if the System object should be predefined
+    white    => 0,    # if strict whitespace rules apply
+    widget   => 0     # if the Yahoo Widgets globals should be predefined
+);
+
+my %getopt = map { ( "$_!" => \$opt{$_} ) } keys %opt;
+
+$opt{indentby} = undef;   # if --white is used then this controls the indent counter
+$getopt{"indentby=i"} = \$opt{indentby};
+
+
+GetOptions(%getopt) || usage();
+my $file = $ARGV[0] || usage();
+
+for my $op ( keys %opt ) {
+    $ENV{"JSLINT_$op"} = $opt{$op} if $opt{$op};
+}
+
+$ENV{LOAD_DOT_JSLINT}++ if -e "$ENV{HOME}/.jslint";
+
+my $path = "/usr/share/jslint";
+$path = $ENV{"JSLINT_HOME"} unless -d $path;
+$path = "$ENV{HOME}/.emacs.d/jslint" unless -d $path;
+
+$ENV{JSLINT_HOME} = $path;
+my $js = "";
+for my $bin ( qw(smjs js) ) {
+    $js = `which $bin`;
+    chomp($js);
+    last if -e $js;
+}
+    
+unless( -e $js ) {
+    die "Could not find path to 'smjs' or 'js'\n";
+}
+my $output = `$js $path/jslintrun.js <$file`;
+
+$output =~ s/<div( id=\w+)>/----------------------------------------\n/g;
+$output =~ s/<\/?div>//g;
+$output =~ s/<\/?i>//g;
+$output =~ s/<\/?code>//g;
+$output =~ s/&nbsp;/ /g;
+$output =~ s/&amp;/&/g;
+$output =~ s/<\/?p( class=\w+)?>/\n/g;
+
+$output =~ s/Problem at line (\d+) character (\d+):\s+/$file:$1:$2\n/g;
+
+#Implied global: YAHOO 2 3 4 25 79 180 245, children 86 130, clicked_to 89 145, console 37 73 125 168 175 226 239, document 48 74 176 189 242, domUpdate 75 83, end 16, i 93, selected_template 63, selected_to 88 146, start 17
+
+$output =~ s/(Implied global: .*)/filter_globals($1)/em;
+
+warn $output;
+
+
+sub filter_globals {
+    my $str = shift;
+    my $output = "";
+    $str =~ s/^(Implied global: )//m;
+    $output .= "$1\n";
+    
+    my @groups = split /\s*,\s*/, $str;
+
+    for my $group ( @groups ) {
+        my ($var, @lines) = split /\s+/, $group;
+        # just report first line
+        $output .= "$file:$lines[0]:0\n";
+        $output .= "Implied global $var\n\n";
+    }
+    return $output;
+}
+
+
+sub usage {
+
+    die <<EOM;
+Usage: $0 [options] <js file>
+
+options:
+    --adsafe   --no-adsafe   : if use of some browser features should be restricted
+    --bitwise  --no-bitwise  : if bitwise operators should not be allowed
+    --browser  --no-browser  : if the standard browser globals should be predefined
+    --cap      --no-cap      : if upper case HTML should be allowed
+    --debug    --no-debug    : if debugger statements should be allowed
+    --eqeqeq   --no-eqeqeq   : if === should be required
+    --evil     --no-evil     : if eval should be allowed
+    --forin    --no-forin    : if for in statements must filter
+    --fragment --no-fragment : if HTML fragments should be allowed
+    --laxbreak --no-laxbreak : if line breaks should not be checked
+    --nomen    --no-nomen    : if names should be checked
+    --on       --no-on       : if HTML event handlers should be allowed
+    --passfail --no-passfail : if the scan should stop on first error
+    --plusplus --no-plusplus : if increment/decrement should not be allowed
+    --regexp   --no-regexp   : if the . should not be allowed in regexp literals
+    --rhino    --no-rhino    : if the Rhino environment globals should be predefined
+    --undef    --no-undef    : if variables should be declared before used
+    --sidebar  --no-sidebar  : if the System object should be predefined
+    --white    --no-white    : if strict whitespace rules apply
+    --widget   --no-widget   : if the Yahoo Widgets globals should be predefined
+EOM
+}

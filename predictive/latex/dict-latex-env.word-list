@@ -1,0 +1,53 @@
+"Bmatrix" 0
+"Vmatrix" 0
+"abstract" 0
+"align" 0 (:help #("\\begin{align}  Begin aligned equation group" 0 6 (face (font-lock-keyword-face font-latex-sedate-face)) 7 12 (face (font-lock-function-name-face))))
+"align*" 0 (:prefixes ("align") :help #("\\begin{align*}  Begin unnumbered aligned equation group" 0 6 (face (font-lock-keyword-face font-latex-sedate-face)) 7 13 (face (font-lock-function-name-face))))
+"alignat" 0 (:prefixes ("align") :help #("\\begin{alignat}{<#cols>}  Begin aligned equation group with explicit spacing between columns" 0 6 (face (font-lock-keyword-face font-latex-sedate-face)) 7 14 (face (font-lock-function-name-face)) 16 23 (face (font-lock-variable-name-face))))
+"alignat*" 0 (:prefixes ("align" "alignat") :help #("\\begin{alignat*}{<#cols>}  Begin unnumbered aligned equation group with explicit column spacing" 0 7 (face (font-lock-keyword-face font-latex-sedate-face)) 8 15 (face (font-lock-function-name-face)) 17 24 (face (font-lock-variable-name-face))))
+"aligned" 0 (:prefixes ("align") :help #("\\begin{aligned}  Begin aligned equation building block" 0 6 (face (font-lock-keyword-face font-latex-sedate-face)) 7 12 (face (font-lock-function-name-face))))
+"alignedat" 0 (:prefixes ("align" "aligned") :help #("\\begin{alignedat}  Begin aligned equation building block with explicit column spacing" 0 6 (face (font-lock-keyword-face font-latex-sedate-face)) 7 12 (face (font-lock-function-name-face))))
+"array" 0
+"bmatrix" 0
+"center" 0
+"description" 0
+"displaymath" 0
+"document" 0
+"enumerate" 0
+"equation" 0
+"equation*" 0
+"figure" 0
+"figure*" 0 (:prefixes ("figure"))
+"flalign" 0
+"flalign*" 0 (:prefixes ("flalign"))
+"flushleft" 0
+"flushright" 0
+"gather" 0
+"gather*" 0 (:prefixes ("gather"))
+"gathered" 0
+"itemize" 0
+"list" 0
+"matrix" 0
+"minipage" 0
+"multline" 0
+"multline*" 0 (:prefixes ("multline"))
+"picture" 0
+"pmatrix" 0
+"quotation" 0
+"quote" 0
+"smallmatrix" 0
+"split" 0
+"subequations" 0
+"tabbing" 0
+"table" 0
+"table*" 0 (:prefixes ("table"))
+"tabular" 0 (:help #("\\begin{tabular}[pos]{cols}  Begin tabular material" 0 6 (face (font-lock-keyword-face font-latex-sedate-face)) 7 14 (face (font-lock-function-name-face)) 16 19 (face (font-lock-variable-name-face)) 21 25 (face (font-lock-variable-name-face))))
+"tabular*" 0 (:prefixes ("tabular") :help #("\\begin{tabular}{width}[pos]{cols}  Begin fixed-width tabular material" 0 6 (face (font-lock-keyword-face font-latex-sedate-face)) 7 14 (face (font-lock-function-name-face)) 16 19 (face (font-lock-variable-name-face)) 21 25 (face (font-lock-variable-name-face))))
+"thebibliography" 0
+"theorem" 0
+"titlepage" 0
+"trivlist" 0
+"verbatim" 0
+"verbatim*" 0 (:prefixes ("verbatim"))
+"verse" 0
+"vmatrix" 0
