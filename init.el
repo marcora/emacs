@@ -392,32 +392,29 @@
 (require 'auto-complete-yasnippet)
 (require 'auto-complete-ruby)
 (require 'auto-complete-css)
-(require 'auto-complete-config)
+;;(require 'auto-complete-config)
 (global-auto-complete-mode t)
-(setq ac-auto-start 3)
-(setq ac-dwim 3)
+(setq ac-auto-start t)
+(setq ac-dwim t)
 (setq ac-override-local-map nil)
 (define-key ac-complete-mode-map "\t" 'ac-expand)
 (define-key ac-complete-mode-map "\r" 'ac-complete)
-;; or
-;; (define-key ac-complete-mode-map "\t" 'ac-complete)
-;; (define-key ac-complete-mode-map "\r" nil)
 
-;; (set-default 'ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer))
-;; (setq ac-modes
-;;       (append ac-modes
-;;               '(eshell-mode
-;;                 org-mode)))
-;; (add-to-list 'ac-trigger-commands 'org-self-insert-command)
-;; (add-hook 'emacs-lisp-mode-hook
-;;           (lambda ()
-;;             (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-symbols))))
-;; (add-hook 'eshell-mode-hook
-;;           (lambda ()
-;;             (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
-;; (add-hook 'ruby-mode-hook
-;;           (lambda ()
-;;             (setq ac-omni-completion-sources '(("\\.\\=" ac-source-rcodetools)))))
+(setq ac-modes (append ac-modes '(eshell-mode org-mode)))
+
+(add-to-list 'ac-trigger-commands 'org-self-insert-command)
+
+(setq ac-sources (append ac-sources '(ac-source-yasnippet ac-source-imenu ac-source-abbrev ac-source-words-in-buffer)))
+
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (setq ac-sources (append ac-sources ac-source-symbols))))
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (setq ac-sources (append ac-sources ac-source-files-in-current-dir))))
+(add-hook 'ruby-mode-hook
+          (lambda ()
+            (setq ac-sources (append ac-sources ac-ruby-sources))))
 
 ;; Textmate-like behavior for Carbon emacs
 (require 'textmate)
