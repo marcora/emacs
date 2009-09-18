@@ -375,7 +375,7 @@
 (require 'yasnippet)
 (yas/initialize)
 (yas/load-directory "~/.emacs.d/yasnippet/snippets")
-;;(load "~/.emacs.d/yasnippets-rails/setup.el")
+(yas/load-directory "~/.emacs.d/yasnippets-rails/rails-snippets")
 
 ;; predictive
 ;;(add-to-list 'load-path "~/.emacs.d/predictive/")
