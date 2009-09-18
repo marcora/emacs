@@ -8,7 +8,7 @@
 
 ;; Colors and appearance
 (scroll-bar-mode 'right)
-(tool-bar-mode nil)
+(tool-bar-mode 0)
 (show-paren-mode t)
 (setq show-paren-style 'mixed)
 (column-number-mode t)
@@ -394,7 +394,7 @@
 (require 'auto-complete-css)
 (require 'auto-complete-config)
 (global-auto-complete-mode t)
-(setq ac-auto-start t)
+(setq ac-auto-start 3)
 (setq ac-dwim 3)
 (setq ac-override-local-map nil)
 (define-key ac-complete-mode-map "\t" 'ac-expand)
@@ -403,21 +403,21 @@
 ;; (define-key ac-complete-mode-map "\t" 'ac-complete)
 ;; (define-key ac-complete-mode-map "\r" nil)
 
-(set-default 'ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer))
-(setq ac-modes
-      (append ac-modes
-              '(eshell-mode
-                org-mode)))
-(add-to-list 'ac-trigger-commands 'org-self-insert-command)
-(add-hook 'emacs-lisp-mode-hook
-          (lambda ()
-            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-symbols))))
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
-(add-hook 'ruby-mode-hook
-          (lambda ()
-            (setq ac-omni-completion-sources '(("\\.\\=" ac-source-rcodetools)))))
+;; (set-default 'ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer))
+;; (setq ac-modes
+;;       (append ac-modes
+;;               '(eshell-mode
+;;                 org-mode)))
+;; (add-to-list 'ac-trigger-commands 'org-self-insert-command)
+;; (add-hook 'emacs-lisp-mode-hook
+;;           (lambda ()
+;;             (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-symbols))))
+;; (add-hook 'eshell-mode-hook
+;;           (lambda ()
+;;             (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
+;; (add-hook 'ruby-mode-hook
+;;           (lambda ()
+;;             (setq ac-omni-completion-sources '(("\\.\\=" ac-source-rcodetools)))))
 
 ;; Textmate-like behavior for Carbon emacs
 (require 'textmate)
