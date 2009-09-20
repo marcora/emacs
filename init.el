@@ -1,7 +1,6 @@
 ;; Add home emacs dir to load path
 (add-to-list 'load-path "~/.emacs.d")
 
-
 ;; Match bash shell paths when launched from Finder
 (setenv "PATH" (concat (getenv "PATH") ":/opt/local/bin:/usr/local/bin:/usr/texbin"))
 (setq exec-path (append exec-path '("/opt/local/bin"
@@ -391,15 +390,6 @@
 (yas/load-directory "~/.emacs.d/yasnippet/snippets")
 (yas/load-directory "~/.emacs.d/yasnippets-rails/rails-snippets")
 
-;; predictive
-;;(add-to-list 'load-path "~/.emacs.d/predictive/")
-;;(add-to-list 'load-path "~/.emacs.d/predictive/latex/")
-;;(add-to-list 'load-path "~/.emacs.d/predictive/texinfo/")
-;;(add-to-list 'load-path "~/.emacs.d/predictive/html/")
-;;(require 'predictive)
-;;(add-to-list 'load-path "~/.emacs.d/completion-ui/")
-;;(require 'completion-ui)
-
 ;; autocomplete
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
 (require 'auto-complete)
@@ -413,13 +403,9 @@
 (setq ac-override-local-map nil)
 (define-key ac-complete-mode-map "\t" 'ac-expand)
 (define-key ac-complete-mode-map "\r" 'ac-complete)
-
 (setq ac-modes (append ac-modes '(eshell-mode org-mode)))
-
 (add-to-list 'ac-trigger-commands 'org-self-insert-command)
-
 (setq ac-sources (append ac-sources '(ac-source-yasnippet ac-source-imenu ac-source-abbrev ac-source-words-in-buffer)))
-
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
             (setq ac-sources (append ac-sources ac-source-symbols))))
