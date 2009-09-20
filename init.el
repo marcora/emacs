@@ -1,9 +1,18 @@
 ;; Add home emacs dir to load path
 (add-to-list 'load-path "~/.emacs.d")
 
+
+;; Match bash shell paths when launched from Finder
+(setenv "PATH" (concat (getenv "PATH") ":/opt/local/bin:/usr/local/bin:/usr/texbin"))
+(setq exec-path (append exec-path '("/opt/local/bin"
+                                    "/usr/local/bin"
+                                    "/usr/texbin")))
+
 ;; User info and prefs
 (setq user-full-name "Edoardo \"Dado\" Marcora")
 (setq user-mail-address "edoardo.marcora@gmail.com")
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 
 ;; Colors and appearance
@@ -205,6 +214,11 @@
 ;; (setq-default TeX-master "master")
 ;; (add-hook 'LaTeX-mode-hook '(lambda () (TeX-fold-mode 1)))
 ;; (add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
+;;
+(add-to-list 'load-path "~/.emacs.d/auctex")
+(add-to-list 'load-path "~/.emacs.d/auctex/preview")
+(load "auctex.el" nil t t)
+(load "preview-latex.el" nil t t)
 (autoload 'turn-on-bib-cite "bib-cite")
 (add-hook 'LaTeX-mode-hook 'turn-on-bib-cite)
 (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
