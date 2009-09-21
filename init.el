@@ -24,12 +24,12 @@
 (setq font-lock-maximum-decoration t)
 (setq query-replace-highlight t)
 (setq search-highlight t)
-(set-background-color "black")
-(set-foreground-color "white")
-;;(add-to-list 'load-path "~/.emacs.d/color-theme")
-;;(require 'color-theme)        ; sudo aptitude install emacs-goodies-el
-;;(color-theme-initialize)
-;;(color-theme-arjen)
+;;(set-background-color "black")
+;;(set-foreground-color "white")
+(add-to-list 'load-path "~/.emacs.d/color-theme")
+(require 'color-theme)        ; sudo aptitude install emacs-goodies-el
+(color-theme-initialize)
+(color-theme-arjen)
 
 ;; Carbon emacs config
 (setq mac-command-modifier 'alt mac-option-modifier 'meta)
@@ -94,8 +94,10 @@
 ;;(require 'find-recursive)
 (require 'anything)
 (require 'anything-config)
-(require 'anything-rcodetools)
 (require 'anything-show-completion)
+(require 'anything-rcodetools)
+(setq rct-get-all-methods-command "PAGER=cat qri -l")
+(define-key anything-map "\C-z" 'anything-execute-persistent-action)
 (global-set-key (kbd "RET") 'newline-and-indent)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x a") 'anything)
@@ -286,6 +288,7 @@
 (add-hook 'ruby-mode-hook
           (lambda ()
             (require 'ruby-electric)
+            (require 'rcodetools)
             (require 'ruby-block)
             (require 'inf-ruby)
             (require 'rdebug)
@@ -405,6 +408,7 @@
 (define-key ac-complete-mode-map "\r" 'ac-complete)
 (setq ac-modes (append ac-modes '(eshell-mode org-mode)))
 (add-to-list 'ac-trigger-commands 'org-self-insert-command)
+(ac-ruby-init)
 (setq ac-sources (append ac-sources '(ac-source-yasnippet ac-source-imenu ac-source-abbrev ac-source-words-in-buffer)))
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
@@ -412,9 +416,9 @@
 (add-hook 'eshell-mode-hook
           (lambda ()
             (setq ac-sources (append ac-sources ac-source-files-in-current-dir))))
-(add-hook 'ruby-mode-hook
-          (lambda ()
-            (setq ac-sources (append ac-sources ac-ruby-sources))))
+;; (add-hook 'ruby-mode-hook
+;;           (lambda ()
+;;             (setq ac-sources (append ac-sources ac-ruby-sources))))
 
 ;; Textmate-like behavior for Carbon emacs
 (require 'textmate)
