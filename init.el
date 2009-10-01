@@ -28,7 +28,8 @@
 (set-foreground-color "white")
 (set-face-background 'region "blue")
 (set-cursor-color "red")
-(set-mouse-color "goldenrod")
+(global-hl-line-mode t)
+(set-face-background 'hl-line "gray10")
 ;; (add-to-list 'load-path "~/.emacs.d/color-theme")
 ;; (require 'color-theme)        ; sudo aptitude install emacs-goodies-el
 ;; (color-theme-initialize)
