@@ -24,12 +24,15 @@
 (setq font-lock-maximum-decoration t)
 (setq query-replace-highlight t)
 (setq search-highlight t)
-;;(set-background-color "black")
-;;(set-foreground-color "white")
-(add-to-list 'load-path "~/.emacs.d/color-theme")
-(require 'color-theme)        ; sudo aptitude install emacs-goodies-el
-(color-theme-initialize)
-(color-theme-arjen)
+(set-background-color "black")
+(set-foreground-color "white")
+(set-face-background 'region "blue")
+(set-cursor-color "red")
+(set-mouse-color "goldenrod")
+;; (add-to-list 'load-path "~/.emacs.d/color-theme")
+;; (require 'color-theme)        ; sudo aptitude install emacs-goodies-el
+;; (color-theme-initialize)
+;; (color-theme-arjen)
 
 ;; Carbon emacs config
 (setq mac-command-modifier 'alt mac-option-modifier 'meta)
@@ -57,13 +60,20 @@
 (setq-default indent-tabs-mode nil)
 (setq default-truncate-lines t)
 (setq save-abbrevs nil)
+(setq standard-indent 2)
 ;;(setq find-file-run-dired t)
 (setq x-select-enable-clipboard t)
 (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
 (setq scroll-preserve-screen-position t)
 (setq frame-title-format "Emacs - %b")
 (setq resize-minibuffer-mode t)
+
 (delete-selection-mode t)
+(require 'delsel)
+(setq mouse-drag-copy-region nil)
+(global-unset-key (kbd "<mouse-2>"))
+(global-unset-key (kbd "<mouse-3>"))
+
 (setq default-major-mode 'text-mode)
 (setq initial-major-mode 'text-mode)
 ;;(setq text-mode-hook 'turn-on-auto-fill)
@@ -197,7 +207,7 @@
 (setq org-completion-use-ido t)
 (setq org-return-follows-link t)
 (setq org-support-shift-select t)
-                                        ; (setq org-replace-disputed-keys t)
+(setq org-replace-disputed-keys t)
 (define-key global-map "\C-cr" 'org-remember)
 (add-hook 'org-mode-hook                ; yasnippet compatibility
           (lambda ()
@@ -350,6 +360,7 @@
 ;; js2
 (autoload 'js2-mode "js2" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.json$" . js2-mode))
 ;; http://www.corybennett.org/projects/
 (add-hook 'js2-mode-hook
           (lambda ()
@@ -401,7 +412,7 @@
 (require 'auto-complete-css)
 ;;(require 'auto-complete-config)
 (global-auto-complete-mode t)
-(setq ac-auto-start t)
+(setq ac-auto-start 3)
 (setq ac-dwim t)
 (setq ac-override-local-map nil)
 (define-key ac-complete-mode-map "\t" 'ac-expand)
@@ -604,8 +615,8 @@ LIST defaults to all existing live buffers."
   (if (equal buffer-file-coding-system 'undecided-unix )
       nil
     (set-buffer-file-coding-system 'undecided-unix))
-  (setq c-basic-offset 4
-        tab-width 4
+  (setq c-basic-offset 2
+        tab-width 2
         indent-tabs-mode nil)
   (buffer-untabify)
   (buffer-indent)
@@ -663,3 +674,9 @@ buffer instead of replacing the text in region."
   (interactive)
   (byte-recompile-directory "~/.emacs.d" 1))
 
+;; Define the clear command for eshell
+(defun eshell/clear ()
+  "Clear the eshell buffer."
+  (interactive)
+  (let ((inhibit-read-only t))
+    (erase-buffer)))
