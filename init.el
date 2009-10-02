@@ -35,7 +35,8 @@
 ;; (color-theme-initialize)
 ;; (color-theme-arjen)
 
-;; Carbon emacs config
+;; Mac
+(require 'growl)
 (setq mac-command-modifier 'alt mac-option-modifier 'meta)
 (require 'redo)
 (global-set-key [(control z)] 'undo)
@@ -675,9 +676,20 @@ buffer instead of replacing the text in region."
   (interactive)
   (byte-recompile-directory "~/.emacs.d" 1))
 
-;; Define the clear command for eshell
+;; Clear command for eshell
 (defun eshell/clear ()
   "Clear the eshell buffer."
   (interactive)
   (let ((inhibit-read-only t))
     (erase-buffer)))
+
+;; Full-screen command
+(defun mac-toggle-fullscreen ()
+  "Toggle full-screen on current frame (only for Mac)"
+  (interactive)
+  (set-frame-parameter nil 'fullscreen
+                       (if (frame-parameter nil 'fullscreen)
+                           nil
+                         'fullboth)))
+;;(global-set-key [(meta return)] 'toggle-fullscreen) 
+
