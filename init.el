@@ -20,7 +20,7 @@
 (show-paren-mode t)
 (setq show-paren-style 'mixed)
 (column-number-mode t)
-(global-font-lock-mode t t)
+(global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 (setq query-replace-highlight t)
 (setq search-highlight t)
@@ -313,6 +313,7 @@
 (add-to-list 'smart-compile-alist '("\\.rb$" . "ruby -w %f")) ;; redef smart-compile command for ruby
 
 ;; Rinari
+(add-to-list 'load-path "~/.emacs.d/jump")
 (add-to-list 'load-path "~/.emacs.d/rinari")
 (require 'rinari)
 (setq rinari-tags-file-name "TAGS")
