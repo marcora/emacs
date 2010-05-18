@@ -219,6 +219,13 @@
 ;; Dot mode
 (load-file "~/.emacs.d/graphviz-dot-mode.el")
 
+;; Mardown mode
+(autoload 'markdown-mode "markdown-mode.el"
+  "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.markdown$" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.mdn$" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
+
 ;; AUCTeX
 ;; (require 'tex-site)
 ;; (setq TeX-auto-save t)
